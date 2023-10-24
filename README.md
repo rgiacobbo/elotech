@@ -35,6 +35,8 @@ $ java -jar target/todolist-1.0.0.jar
 
 Api para o gerenciamento de uma Pessoa que tem contatos.
 
+Porta utilizada: 8080
+
 Possue as rotas:
 POST - Create new Person: /persons/
 PUT - Update Person: /person/{id}
