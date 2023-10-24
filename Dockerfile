@@ -1,27 +1,35 @@
+# Etapa 1: Construir o aplicativo Java
 FROM ubuntu:latest AS build
 
+# Atualizar o sistema e instalar o OpenJDK 17 e o Maven
+RUN apt-get update && apt-get install -y openjdk-17-jdk maven
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+# Copiar o código-fonte do aplicativo para o contêiner
+COPY . /app
 
-COPY . .
+# Define o diretório de trabalho para a compilação
+WORKDIR /app
 
-RUN apt-get install maven -y
+# Compilar o aplicativo usando o Maven
 RUN mvn clean install
 
+# Etapa 2: Preparar o contêiner final
 FROM openjdk:17-jdk-slim
 
+# Copiar o arquivo JAR construído na etapa anterior
+COPY --from=build /app/target/todolist-1.0.0.jar /app.jar
+
+# Etapa 3: Configurar o PostgreSQL
 FROM postgres:latest
 
+# Definir as variáveis de ambiente para o PostgreSQL
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
+ENV POSTGRES_DB mydb
 
-ENV POSTGRES_DB mybd
-
+# Expor as portas do PostgreSQL e do aplicativo (8080)
 EXPOSE 5432
-
 EXPOSE 8080
 
-COPY --from=build /target/todolist-1.0.0.jar app.jar
-
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+# Ponto de entrada para o aplicativo Java
+ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.desafio.elotech.ElotechApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.612 s - in com.desafio.elotech.ElotechApplicationTests

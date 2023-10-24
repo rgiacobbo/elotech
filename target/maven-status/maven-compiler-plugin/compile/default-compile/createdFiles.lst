@@ -1,0 +1,9 @@
+com/desafio/elotech/repositories/IPersonRepository.class
+com/desafio/elotech/repositories/IContactRepository.class
+com/desafio/elotech/dtos/PersonRecordDto.class
+com/desafio/elotech/dtos/ContactRecordDto.class
+com/desafio/elotech/mapper/DtoMapper.class
+com/desafio/elotech/controllers/PersonController.class
+com/desafio/elotech/models/ContactModel.class
+com/desafio/elotech/ElotechApplication.class
+com/desafio/elotech/models/PersonModel.class

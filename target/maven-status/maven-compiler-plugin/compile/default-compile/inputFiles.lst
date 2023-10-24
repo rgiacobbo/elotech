@@ -1,0 +1,9 @@
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/repositories/IContactRepository.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/repositories/IPersonRepository.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/dtos/ContactRecordDto.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/mapper/DtoMapper.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/models/ContactModel.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/controllers/PersonController.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/dtos/PersonRecordDto.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/models/PersonModel.java
+/home/manoricards/Documents/Elotech/elotech/src/main/java/com/desafio/elotech/ElotechApplication.java
