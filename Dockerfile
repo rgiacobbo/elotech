@@ -3,7 +3,6 @@ FROM ubuntu:latest AS build
 
 # Atualizar o sistema e instalar o OpenJDK 17 e o Maven
 RUN apt-get update && apt-get install -y openjdk-17-jdk maven
-RUN apt install postgresql postgresql-contrib
 
 # Copiar o código-fonte do aplicativo para o contêiner
 COPY . /app
