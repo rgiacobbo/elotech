@@ -1,15 +1,17 @@
 package com.desafio.elotech.controllers;
 
 
+import com.desafio.elotech.dtos.ContactRecordDto;
+import com.desafio.elotech.dtos.PersonRecordDto;
+import com.desafio.elotech.mapper.DtoMapper;
 import com.desafio.elotech.models.ContactModel;
 import com.desafio.elotech.models.PersonModel;
 import com.desafio.elotech.repositories.IPersonRepository;
+import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,7 +35,7 @@ class PersonControllerTest {
     @Mock
     IPersonRepository personRepository;
 
-
+    @InjectMocks
     private PersonController personController;
 
 
@@ -45,109 +47,76 @@ class PersonControllerTest {
     @Test
     @DisplayName("Criação do usuario bem sucedida")
     void createPerson() {
-        PersonModel person = new PersonModel();
-        person.setId(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"));
-        person.setName("Ricardo");
-        person.setBirthDate(LocalDate.parse("2023-01-01"));
 
-        List<ContactModel> contacts = new ArrayList<>();
-        ContactModel contact = new ContactModel();
-        contact.setName("Contato1");
-        contact.setPhone("9999-9999");
-        contact.setEmail("ricardo@gmail.com");
+        List<ContactRecordDto> contacts = new ArrayList<>();
+        ContactRecordDto contact = new ContactRecordDto("Contato1", "9999-9999", "ricardo@gmail.com");
         contacts.add(contact);
+        PersonRecordDto person = new PersonRecordDto(null, "Ricardo", "593.014.890-23", LocalDate.parse("2023-01-01"), contacts);
 
-        person.setContactModels(contacts);
-
-        when(personRepository.findById(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"))).thenReturn(Optional.of(person));
-
-        verify(personRepository, times(1)).save(person);
+        when(personRepository.save(any())).thenReturn(DtoMapper.mapDtoToEntity(person));
+        personController.createPerson(person);
+        ArgumentCaptor<PersonModel> personCaptor = ArgumentCaptor.forClass(PersonModel.class);
+        verify(personRepository, times(1)).save(personCaptor.capture());
+        var personC = personCaptor.getValue();
+        assertEquals(personC.getName(), person.name());
+        assertEquals(personC.getCpf(), person.cpf());
+        assertEquals(personC.getBirthDate(), person.birthDate());
+        assertEquals(personC.getContactModels().size(), 1);
+        assertEquals(personC.getContactModels().get(0).getName(), contact.name());
+        assertEquals(personC.getContactModels().get(0).getEmail(), contact.email());
+        assertEquals(personC.getContactModels().get(0).getPhone(), contact.phone());
 
     }
 
     @Test
-    @DisplayName("Recuperação de todas as pessoas bem-sucedida")
-    void getAllPersons() {
-        // Crie dados fictícios de pessoas
+    void updatePerson(){
+        var idPerson = UUID.randomUUID();
+
         PersonModel person = new PersonModel();
-        person.setId(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"));
+        person.setId(idPerson);
         person.setName("Ricardo");
+        person.setCpf("593.014.890-23");
         person.setBirthDate(LocalDate.parse("2023-01-01"));
 
-        List<ContactModel> contacts = new ArrayList<>();
-        ContactModel contact = new ContactModel();
-        contact.setName("Contato1");
-        contact.setPhone("9999-9999");
-        contact.setEmail("ricardo@gmail.com");
-        contacts.add(contact);
+        PersonRecordDto personDto = new PersonRecordDto(null, "Daniel", "115.369.550-27", LocalDate.parse("2022-02-03"),new ArrayList<>());
 
-        PersonModel person2 = new PersonModel();
-        person2.setId(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"));
-        person2.setName("Ricardo");
-        person2.setBirthDate(LocalDate.parse("2023-01-01"));
+        when(personRepository.findById(idPerson)).thenReturn(Optional.of(person));
+        personController.updatePerson(idPerson, personDto);
+        ArgumentCaptor<PersonModel> personCaptor = ArgumentCaptor.forClass(PersonModel.class);
+        verify(personRepository, times(1)).save(personCaptor.capture());
+        var personC = personCaptor.getValue();
+        assertEquals(personC.getName(), personDto.name());
+        assertEquals(personC.getCpf(), personDto.cpf());
+        assertEquals(personC.getBirthDate(), personDto.birthDate());
 
-        List<ContactModel> contacts2 = new ArrayList<>();
-        ContactModel contact2 = new ContactModel();
-        contact2.setName("Contato1");
-        contact2.setPhone("9999-9999");
-        contact2.setEmail("ricardo@gmail.com");
-        contacts2.add(contact2);
-
-        person2.setContactModels(contacts2);
-
-        List<PersonModel> people = new ArrayList<>();
-        people.add(person);
-        people.add(person2);
-        // Simule o comportamento do personRepository.findAll() para retornar a lista de pessoas
-        when(personRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(people));
-
-        // Chame o método getAllPersons no controlador
-        ResponseEntity<Page<PersonModel>> response = personController.getAllPersons(Mockito.mock(Pageable.class));
-
-        // Verifique se a resposta é bem-sucedida
-        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void getPersonById_PersonNotFound() {
-        PersonModel person = new PersonModel();
-        person.setId(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"));
-        person.setName("Ricardo");
-        person.setBirthDate(LocalDate.parse("2023-01-01"));
-
-        List<ContactModel> contacts = new ArrayList<>();
-        ContactModel contact = new ContactModel();
-        contact.setName("Contato1");
-        contact.setPhone("9999-9999");
-        contact.setEmail("ricardo@gmail.com");
-        contacts.add(contact);
-
-        person.setContactModels(contacts);
-
-        when(personRepository.findById(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"))).thenReturn(Optional.of(person));
-        verify(personRepository, times(1)).save(person);
+        Mockito.when(personRepository.findById(any())).thenReturn(Optional.empty());
+        var res = personController.getPersonById(UUID.randomUUID());
+        assertEquals(ResponseEntity.notFound().build(), res);
 
         }
 
 
     @Test
-    @DisplayName("Deve chamar métodos corretos ao excluir")
+    @DisplayName("Deve returnar sucesso ao excluir")
     void deletePerson() {
-        PersonModel person = new PersonModel();
-        person.setId(UUID.fromString("260408af-6de8-43af-8188-1cfcd93a05f7"));
-        person.setName("Ricardo");
-        person.setBirthDate(LocalDate.parse("2023-01-01"));
-
-        List<ContactModel> contacts = new ArrayList<>();
-        ContactModel contact = new ContactModel();
-        contact.setName("Contato1");
-        contact.setPhone("9999-9999");
-        contact.setEmail("ricardo@gmail.com");
-        contacts.add(contact);
-
-        person.setContactModels(contacts);
-        personRepository.deleteById(person.getId());
-        verify(personRepository, times(1)).deleteById(person.getId());
+        var id = UUID.randomUUID();
+        Mockito.when(personRepository.existsById(id)).thenReturn(true);
+        var res = personController.deletePerson(id);
+        verify(personRepository, times(1)).deleteById(id);
+        assertEquals(ResponseEntity.noContent().build(), res);
     }
 
+    @Test
+    @DisplayName("Deve retorna falha ao excluir")
+    void deletePersonFalse() {
+        var id = UUID.randomUUID();
+        Mockito.when(personRepository.existsById(id)).thenReturn(false);
+        var res = personController.deletePerson(id);
+        verify(personRepository, never()).deleteById(id);
+        assertEquals(ResponseEntity.notFound().build(), res);
+    }
 }
