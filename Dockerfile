@@ -20,18 +20,7 @@ FROM openjdk:17-jdk-slim
 # Copiar o arquivo JAR construído na etapa anterior
 COPY --from=build /app/target/todolist-1.0.0.jar /app.jar
 
-# Etapa 3: Configurar o PostgreSQL
-FROM postgres:latest
 
-# Definir as variáveis de ambiente para o PostgreSQL
-ENV POSTGRES_USER postgres
-ENV POSTGRES_PASSWORD postgres
-ENV POSTGRES_DB mydb
-
-RUN postgres createdb sammy
-
-# Expor as portas do PostgreSQL e do aplicativo (8080)
-EXPOSE 5432
 EXPOSE 8080
 
 # Ponto de entrada para o aplicativo Java
