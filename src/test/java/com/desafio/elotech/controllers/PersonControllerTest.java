@@ -69,6 +69,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @DisplayName("Atualização bem sucedida")
     void updatePerson(){
         var idPerson = UUID.randomUUID();
 
@@ -92,6 +93,7 @@ class PersonControllerTest {
     }
 
     @Test
+    @DisplayName("Pessoa não encontrada")
     void getPersonById_PersonNotFound() {
         Mockito.when(personRepository.findById(any())).thenReturn(Optional.empty());
         var res = personController.getPersonById(UUID.randomUUID());
