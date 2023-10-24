@@ -17,7 +17,7 @@ RUN mvn clean install
 FROM openjdk:17-jdk-slim
 
 # Copiar o arquivo JAR construído na etapa anterior
-COPY --from=build /app/target/todolist-1.0.0.jar /app.jar
+COPY --from=build /app/target/elotech-1.0.0.jar /app.jar
 
 
 EXPOSE 8080
